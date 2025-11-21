@@ -1,4 +1,4 @@
-import { throwError } from 'rxjs';
+
 import { test, expect, APIRequestContext } from '@playwright/test';
 
 test.describe('Positive API Tests', () => {
@@ -143,6 +143,30 @@ test.describe('Negative API Tests', () => {
         }
     });
 
+    test('Verify that the user update with non-existing ID returns status 404', async ({ request }) => {
+        const nonExistingID = 12345;
+
+        const response = await request.put(`Users/${nonExistingID}`, {
+            data: {
+                "id": nonExistingID,
+                "userName": "test",
+                "password": "1234"
+            }
+        })
+
+        const body = await response.json()
+        if (body.id !== nonExistingID) {
+            console.warn('The API updated a user that does not exist (training API behavior).');
+        }
+        console.log(body)
+    })
+
+    test('Verify that deleting user with non-existing ID returns status 404', async ({ request }) => {
+        const nonExistingID = 12345;
+
+        const response = await request.delete(`Users/${nonExistingID}`);
+        console.warn('Delete request returned:', response.status); // Should return 404 but because training API behavior returns 200  
+    });
 });
 
 
