@@ -1,7 +1,7 @@
 
 import { test, expect, APIRequestContext } from '@playwright/test';
 
-test.describe('Positive API Tests', () => {
+test.describe('User APi - Positive Tests', () => {
 
     test('Verify that all users are returned', async ({ request }) => {
         const response = await request.get('Users');
@@ -66,7 +66,7 @@ test.describe('Positive API Tests', () => {
     });
 });
 
-test.describe('Negative API Tests', () => {
+test.describe('User API - Negative Tests', () => {
 
     test('Verify that requesting a non-existing user returns 404', async ({ request }) => {
         const nonExistingUserId = 1697;
