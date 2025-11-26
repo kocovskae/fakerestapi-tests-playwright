@@ -1,4 +1,4 @@
-import { test, expect, APIRequestContext } from '@playwright/test'
+import { test, expect } from '@playwright/test'
 
 test.describe('Books APi - Positive Tests', () => {
 
