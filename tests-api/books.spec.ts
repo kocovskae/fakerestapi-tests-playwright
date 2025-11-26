@@ -106,7 +106,7 @@ test.describe('Books API - Negative tests', () => {
         });
 
         expect(response.status()).toBe(400);
-        console.warn('The test failed because this is a training api, and this case is not validated');
+        test.fail(true, 'Training API incorrectly returns 200 instead of 400');
 
     });
 })

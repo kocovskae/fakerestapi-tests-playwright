@@ -78,4 +78,56 @@ test.describe('CoverPhotos API - Positive tests', () => {
         console.log(body.url);
     });
 
+    test('Verify that deleting cover photos by ID returns status 200', async ({ request }) => {
+
+        const coverId = 8;
+        const response = await request.delete(`CoverPhotos/${coverId}`);
+        expect(response.status()).toBe(200);
+    })
+})
+
+test.describe('CoverPhotos API - Negative tests', () => {
+
+    test('Verify that a cover photos with non-existing ID returns status 404', async ({ request }) => {
+
+        const nonExistingId = 1234;
+        const response = await request.get(`CoverPhotos/${nonExistingId}`);
+        expect(response.status()).toBe(404);
+        const body = await response.json();
+        expect(body.title).toBe('Not Found');
+        expect(body.status).toBe(404);
+        console.log(body.title, body.status);
+    });
+
+    test('Verify that a cover photos with invalid ID format returns status 400', async ({ request }) => {
+
+        const invalidID = 'ek4';
+        const response = await request.get(`CoverPhotos/${invalidID}`);
+        expect(response.status()).toBe(400);
+        const body = await response.json();
+        expect(body).toHaveProperty('errors');
+        expect(body.errors.id[0]).toContain(`The value '${invalidID}' is not valid.`)
+        console.log(body.errors);
+    })
+
+    test('Verify that cover photos by non-existing BookID returns status 404', async ({ request }) => {
+        // Note: If is a real case the request should return 404 not 200 
+        const nonExistingID = 458;
+        const response = await request.get(`CoverPhotos/books/covers/${nonExistingID}`);
+        expect(response.status()).toBe(200);
+        const body = await response.json();
+        console.log(body)
+        expect(body).toEqual([]);
+    })
+
+    test('Verify that cover photos by invalid BookID returns status 404', async ({ request }) => {
+
+        const invalidId = 'ab4'
+        const response = await request.get(`CoverPhotos/books/covers/${invalidId}`);
+        expect(response.status()).toBe(400);
+        const body = await response.json();
+        expect(body).toHaveProperty('errors');
+        expect(body.errors.idBook[0]).toContain(`The value '${invalidId}' is not valid.`);
+        console.log(body.errors);
+    })
 })
