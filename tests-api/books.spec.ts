@@ -104,9 +104,7 @@ test.describe('Books API - Negative tests', () => {
                 "publishDate": "2025-11-24T14:25:25.964Z"
             }
         });
-
+        // Note: test fails because this is a training API, and this case is not validated as it should be with status 400
         expect(response.status()).toBe(400);
-        test.fail(true, 'Training API incorrectly returns 200 instead of 400');
-
     });
 })

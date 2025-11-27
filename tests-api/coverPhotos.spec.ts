@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test'
+import { test, expect, errors } from '@playwright/test'
 interface CoverPhoto {
     id: number;
     idBook: number;
@@ -129,5 +129,79 @@ test.describe('CoverPhotos API - Negative tests', () => {
         expect(body).toHaveProperty('errors');
         expect(body.errors.idBook[0]).toContain(`The value '${invalidId}' is not valid.`);
         console.log(body.errors);
+    });
+
+    test('Verify that creating cover photos with empty body returns status 400', async ({ request }) => {
+
+        const response = await request.post('CoverPhotos', {
+            data: {}
+        })
+        // Note: the test should pass, but because this is a training API, this case is not validated, as it should be with status 400
+        expect(response.status()).toBe(400);
+    })
+
+    test('Verify that creating cover photos with invalid URL retunrs status 400', async ({ request }) => {
+
+        const randomId = Math.floor(Math.random() * 100000);
+        const response = await request.post('CoverPhotos', {
+            data: {
+                id: randomId,
+                idBook: randomId,
+                url: "xxx"
+            }
+        })
+        // Note: the test should pass, but because this is a training API, this case is not validated, as it should be with status 400
+        expect(response.status()).toBe(400);
+    });
+
+    test('Verify that updating cover photos by ID with invalid url returns status 400', async ({ request }) => {
+
+        const coverId = 6;
+        const response = await request.put(`CoverPhotos/${coverId}`, {
+            data: {
+                'url': 'example'
+            }
+        })
+        // Note: the test should pass, but because this is a training API, this case is not validated, as it should be with status 400
+        expect(response.status()).toBe(400);
+    });
+
+    test('Verify that updating cover photos by ID with invalid idBook returns status 400', async ({ request }) => {
+        const coverId = 2;
+        const idBook = 'af';
+        const response = await request.put(`CoverPhotos/${coverId}`, {
+            data: {
+                "id": coverId,
+                "idBook": idBook,
+            }
+        })
+        expect(response.status()).toBe(400);
+        const body = await response.json();
+        expect(body).toHaveProperty("errors");
+        expect(body.errors["$.idBook"][0]).toMatch("The JSON value could not be converted to System.Int32. Path: $.idBook | LineNumber: 0 | BytePositionInLine: 21.");
+    });
+
+    test('Verify that updating cover photos with invalid ID returns status 400', async ({ request }) => {
+
+        const invalidId = "wd";
+        const response = await request.put(`CoverPhotos/${invalidId}`, {
+            data: { "id": invalidId }
+        })
+
+        expect(response.status()).toBe(400);
+        const body = await response.json();
+        expect(body).toHaveProperty("errors");
+        console.log(body.errors.id)
+        expect(body.errors.id[0]).toMatch(`The value '${invalidId}' is not valid.`);
+    });
+
+    test('Verify that deleting cover photos with invalid ID returns status 400', async ({ request }) => {
+
+        const invalidId = "ad";
+        const response = await request.delete(`CoverPhotos/${invalidId}`);
+        expect(response.status()).toBe(400);
+        const body = await response.json();
+        expect(body).toHaveProperty("errors");
+        expect(body.errors.id[0]).toMatch(`The value '${invalidId}' is not valid.`)
     })
 })
